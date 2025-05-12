@@ -5,6 +5,7 @@ from elliptic_curve_plot import EllipticCurve
 from typing import List, Tuple, Dict, Optional
 import random
 import colorsys
+import os
 
 
 def get_random_colors(n: int) -> List[Tuple[float, float, float]]:
@@ -140,9 +141,18 @@ def visualize_scalar_multiplication(curve: EllipticCurve, base_point: Tuple[int,
     plt.show()
 
 
-def visualize_pollard_rho(curve: EllipticCurve, generator: Tuple[int, int], target: Tuple[int, int], max_iterations: int = 50):
+def visualize_pollard_rho(curve: EllipticCurve, generator: Tuple[int, int], target: Tuple[int, int], 
+                          max_iterations: int = 50, save_image: bool = True, show_plot: bool = True):
     """
     Visualizes the Pollard's Rho algorithm on an elliptic curve.
+    
+    Args:
+        curve: The elliptic curve
+        generator: The base point generator
+        target: The target point (we want to find k such that k*generator = target)
+        max_iterations: Maximum number of iterations for the algorithm
+        save_image: Whether to save the plot as a PNG file
+        show_plot: Whether to display the plot interactively
     """
     if not curve.is_on_curve(generator) or not curve.is_on_curve(target):
         raise ValueError("Both generator and target points must be on the curve")
@@ -239,8 +249,21 @@ def visualize_pollard_rho(curve: EllipticCurve, generator: Tuple[int, int], targ
     # Set equal aspect ratio
     plt.axis('equal')
     
-    # Show the plot
-    plt.show()
+    # Save the plot if requested
+    if save_image:
+        # Create images directory if it doesn't exist
+        os.makedirs('images', exist_ok=True)
+        
+        # Save plot as PNG file
+        filename = f'images/pollards_rho_a{curve.a}_b{curve.b}_p{curve.p}.png'
+        plt.savefig(filename, dpi=300, bbox_inches='tight')
+        print(f"Saved Pollard's Rho plot to {filename}")
+    
+    # Show the plot if requested
+    if show_plot:
+        plt.show()
+    else:
+        plt.close()
 
 
 if __name__ == "__main__":

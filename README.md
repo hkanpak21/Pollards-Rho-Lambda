@@ -6,6 +6,14 @@ This project implements and demonstrates three algorithms for solving the Discre
 2. **Pollard's Rho** - A probabilistic algorithm with constant space complexity
 3. **Pollard's Lambda (Kangaroo)** - A probabilistic algorithm designed for bounded discrete logarithms
 
+## Visual Demonstration
+
+Here's a visualization of Pollard's Rho algorithm running on an elliptic curve:
+
+![Pollard's Rho Algorithm on Elliptic Curve](images/pollards_rho_a3_b7_p29.png)
+
+*The visualization shows Pollard's Rho algorithm finding the discrete logarithm on the elliptic curve y² = x³ + 3x + 7 over F₂₉. See the [images README](images/README.md) for details.*
+
 ## Purpose
 
 The program serves as an educational tool to compare and visualize how these three algorithms approach the same DLP problem. It highlights their operational differences, computational steps, and resource usage (especially space complexity).

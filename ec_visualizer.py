@@ -33,6 +33,9 @@ def parse_args():
     parser.add_argument("--max-iterations", type=int, default=20, 
                       help="Maximum iterations for Pollard's Rho visualization")
     
+    parser.add_argument("--save-only", action="store_true",
+                      help="Save plots to image files without displaying them")
+    
     visualization_group = parser.add_argument_group("Visualizations")
     visualization_group.add_argument("--all", action="store_true",
                                    help="Run all visualizations")
@@ -156,7 +159,8 @@ def main():
     
     if (args.all or args.pollard_rho) and base_point and target_point:
         print(f"\n🔄 Visualizing Pollard's Rho with generator {base_point} and target {target_point}...")
-        visualize_pollard_rho(curve, base_point, target_point, args.max_iterations)
+        visualize_pollard_rho(curve, base_point, target_point, args.max_iterations, 
+                             save_image=True, show_plot=not args.save_only)
 
 
 if __name__ == "__main__":
