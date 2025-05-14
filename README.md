@@ -8,11 +8,18 @@ This project implements and demonstrates three algorithms for solving the Discre
 
 ## Visual Demonstration
 
-Here's a visualization of Pollard's Rho algorithm running on an elliptic curve:
+Here are visualizations of all three algorithms running on the same elliptic curve:
 
+### Baby-Step Giant-Step Algorithm
+![Baby-Step Giant-Step on Elliptic Curve](images/bsgs_a3_b7_p29.png)
+
+### Pollard's Rho Algorithm
 ![Pollard's Rho Algorithm on Elliptic Curve](images/pollards_rho_a3_b7_p29.png)
 
-*The visualization shows Pollard's Rho algorithm finding the discrete logarithm on the elliptic curve y² = x³ + 3x + 7 over F₂₉. See the [images README](images/README.md) for details.*
+### Pollard's Lambda (Kangaroo) Algorithm
+![Pollard's Lambda Algorithm on Elliptic Curve](images/lambda_a3_b7_p29.png)
+
+*The visualizations show each algorithm finding the discrete logarithm on the elliptic curve y² = x³ + 3x + 7 over F₂₉. See the [images README](images/README.md) for detailed explanations.*
 
 ## Purpose
 

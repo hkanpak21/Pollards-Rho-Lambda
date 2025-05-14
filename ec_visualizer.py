@@ -5,7 +5,9 @@ from elliptic_curve_plot import EllipticCurve
 from elliptic_curve_visualize import (
     visualize_subgroups,
     visualize_scalar_multiplication,
-    visualize_pollard_rho
+    visualize_pollard_rho,
+    visualize_baby_step_giant_step,
+    visualize_pollards_lambda
 )
 
 
@@ -33,6 +35,9 @@ def parse_args():
     parser.add_argument("--max-iterations", type=int, default=20, 
                       help="Maximum iterations for Pollard's Rho visualization")
     
+    parser.add_argument("--lambda-bounds", type=str, default="0,20",
+                      help="Lower and upper bounds for Pollard's Lambda (format: 'a,b')")
+    
     parser.add_argument("--save-only", action="store_true",
                       help="Save plots to image files without displaying them")
     
@@ -47,6 +52,10 @@ def parse_args():
                                    help="Visualize scalar multiplication")
     visualization_group.add_argument("--pollard-rho", action="store_true",
                                    help="Visualize Pollard's Rho algorithm")
+    visualization_group.add_argument("--bsgs", action="store_true",
+                                   help="Visualize Baby-Step Giant-Step algorithm")
+    visualization_group.add_argument("--lambda", action="store_true", dest="lambda_alg",
+                                   help="Visualize Pollard's Lambda algorithm")
     
     return parser.parse_args()
 
@@ -60,6 +69,21 @@ def parse_point(point_str):
         return (x, y)
     except ValueError:
         raise ValueError(f"Invalid point format: {point_str}. Use 'x,y' format.")
+
+
+def parse_bounds(bounds_str):
+    """Parse bounds from 'a,b' format to tuple (a, b)"""
+    if not bounds_str:
+        return (0, 20)  # Default bounds
+    try:
+        a, b = map(int, bounds_str.split(','))
+        if a >= b:
+            raise ValueError("Lower bound must be less than upper bound")
+        return (a, b)
+    except ValueError as e:
+        if "Lower bound" in str(e):
+            raise e
+        raise ValueError(f"Invalid bounds format: {bounds_str}. Use 'a,b' format.")
 
 
 def find_generator(curve):
@@ -93,7 +117,8 @@ def main():
     args = parse_args()
     
     # Check if any visualization flags are set explicitly
-    vis_flags = [args.plot, args.subgroups, args.scalar_mult, args.pollard_rho]
+    vis_flags = [args.plot, args.subgroups, args.scalar_mult, args.pollard_rho, 
+                args.bsgs, args.lambda_alg]
     if not args.all and not any(vis_flags):
         # If no flags set, enable all visualizations
         args.all = True
@@ -119,7 +144,8 @@ def main():
     
     # Parse base point or find a generator
     base_point = parse_point(args.point)
-    if base_point is None and (args.all or args.scalar_mult or args.pollard_rho):
+    if base_point is None and (args.all or args.scalar_mult or args.pollard_rho or 
+                              args.bsgs or args.lambda_alg):
         base_point, order = find_generator(curve)
         if base_point:
             print(f"Using point {base_point} of order {order} as base point")
@@ -134,7 +160,7 @@ def main():
     
     # Parse target point or compute from base point
     target_point = parse_point(args.target)
-    if target_point is None and (args.all or args.pollard_rho):
+    if target_point is None and (args.all or args.pollard_rho or args.bsgs or args.lambda_alg):
         if base_point:
             target_point = curve.scalar_multiply(args.k, base_point)
             print(f"Using target point {target_point} (= {args.k} × {base_point})")
@@ -143,6 +169,9 @@ def main():
     if target_point is not None and not curve.is_on_curve(target_point):
         print(f"Error: Point {target_point} is not on the curve")
         return
+    
+    # Parse Lambda bounds
+    lambda_bounds = parse_bounds(args.lambda_bounds)
     
     # Run visualizations based on flags
     if args.all or args.plot:
@@ -161,6 +190,17 @@ def main():
         print(f"\n🔄 Visualizing Pollard's Rho with generator {base_point} and target {target_point}...")
         visualize_pollard_rho(curve, base_point, target_point, args.max_iterations, 
                              save_image=True, show_plot=not args.save_only)
+    
+    if (args.all or args.bsgs) and base_point and target_point:
+        print(f"\n📚 Visualizing Baby-Step Giant-Step with generator {base_point} and target {target_point}...")
+        visualize_baby_step_giant_step(curve, base_point, target_point,
+                                     save_image=True, show_plot=not args.save_only)
+    
+    if (args.all or args.lambda_alg) and base_point and target_point:
+        a, b = lambda_bounds
+        print(f"\n🦘 Visualizing Pollard's Lambda with generator {base_point}, target {target_point}, and bounds [{a},{b}]...")
+        visualize_pollards_lambda(curve, base_point, target_point, a, b,
+                                 save_image=True, show_plot=not args.save_only)
 
 
 if __name__ == "__main__":
